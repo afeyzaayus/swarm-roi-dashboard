@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tusmec · Sürü Demo Konsolu</title>
+<style>
+  :root{
+    --navy:#16263f; --navy-2:#1e3355; --field:#0d1728;
+    --teal:#2bbfc4; --teal-dim:#1b7f84;
+    --ink:#e8eef7; --ink-dim:#8fa3bf;
+    --uav:#4da3ff; --ugv:#57d98a; --amr:#ffb84d; --ob:#3a4c68;
+  }
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--navy);color:var(--ink);
+       font:15px/1.5 "Segoe UI",system-ui,sans-serif;min-height:100vh}
+  header{display:flex;align-items:baseline;gap:.75rem;padding:1rem 1.25rem;
+         border-bottom:1px solid var(--navy-2)}
+  header h1{font-size:1.05rem;letter-spacing:.14em;text-transform:uppercase}
+  header h1 b{color:var(--teal)}
+  header .tag{color:var(--ink-dim);font-size:.8rem}
+  main{display:grid;grid-template-columns:300px 1fr;gap:1rem;padding:1rem 1.25rem;
+       max-width:1200px;margin:0 auto}
+  @media (max-width:820px){main{grid-template-columns:1fr}}
+  .panel{background:var(--navy-2);border-radius:10px;padding:1rem}
+  .panel h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;
+            color:var(--teal);margin-bottom:.75rem}
+  label{display:block;font-size:.78rem;color:var(--ink-dim);margin:.6rem 0 .2rem}
+  input,select{width:100%;padding:.45rem .55rem;border-radius:6px;
+        border:1px solid var(--ob);background:var(--field);color:var(--ink)}
+  input:focus,select:focus,button:focus{outline:2px solid var(--teal);outline-offset:1px}
+  .fleet{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+  button{margin-top:1rem;width:100%;padding:.6rem;border:0;border-radius:6px;
+         background:var(--teal);color:#06282a;font-weight:600;cursor:pointer}
+  button.secondary{background:transparent;border:1px solid var(--teal-dim);
+         color:var(--teal);margin-top:.5rem}
+  button:hover{filter:brightness(1.1)}
+  .stage{position:relative}
+  canvas{width:100%;background:var(--field);border-radius:10px;display:block}
+  /* Telemetri HUD: pygame penceresindeki HUD'un web karşılığı */
+  .hud{position:absolute;top:.75rem;left:.75rem;background:rgba(13,23,40,.85);
+       border:1px solid var(--navy-2);border-radius:8px;padding:.5rem .75rem;
+       font:12px/1.6 ui-monospace,Menlo,Consolas,monospace;color:var(--ink-dim)}
+  .hud b{color:var(--ink)}
+  .legend{position:absolute;bottom:.75rem;left:.75rem;display:flex;gap:1rem;
+       font-size:.75rem;color:var(--ink-dim)}
+  .dot{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;margin-right:.3rem}
+  .engine-badge{font:11px ui-monospace,monospace;color:var(--ink-dim);margin-top:.75rem}
+  .roi-wrap{display:grid;grid-template-columns:340px 1fr;gap:1rem;
+            max-width:1200px;margin:0 auto;padding:0 1.25rem 2rem}
+  @media (max-width:820px){.roi-wrap{grid-template-columns:1fr}}
+  .results{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+           gap:.6rem;margin-bottom:1rem}
+  .kpi{background:var(--field);border-radius:8px;padding:.6rem .75rem}
+  .kpi span{display:block;font-size:.7rem;letter-spacing:.08em;
+            text-transform:uppercase;color:var(--ink-dim)}
+  .kpi b{font-size:1.15rem;color:var(--teal)}
+  .kpi b.neg{color:#ff7a7a}
+  .kpi small{display:block;color:var(--ink-dim)}
+  .engine-badge b.mock{color:var(--amr)} .engine-badge b.real{color:var(--ugv)}
+</style>
+</head>
+<body>
+<header>
+  <h1>TUS<b>MEC</b> · Sürü Demo Konsolu</h1>
+  <span class="tag">TusCore simülasyon çekirdeği — Hafta 3 web arayüzü</span>
+</header>
+<main>
+  <section class="panel">
+    <h2>Görev Parametreleri</h2>
+    <label for="scenario">Senaryo şablonu</label>
+    <select id="scenario">
+      <option value="">— Özel —</option>
+    </select>
+    <label for="task">Görev tipi</label>
+    <select id="task">
+      <option value="depo_lojistigi">Depo lojistiği</option>
+      <option value="tarim">Tarım</option>
+      <option value="guvenlik_devriyesi">Güvenlik devriyesi</option>
+    </select>
+    <label for="area">Alan büyüklüğü (m²)</label>
+    <input id="area" type="number" value="10000" min="100">
+    <label>Hedef filo</label>
+    <div class="fleet">
+      <div><label for="uav">UAV</label><input id="uav" type="number" value="3" min="0"></div>
+      <div><label for="ugv">UGV</label><input id="ugv" type="number" value="2" min="0"></div>
+      <div><label for="amr">AMR</label><input id="amr" type="number" value="3" min="0"></div>
+    </div>
+    <label>Engeller — konumlar rastgele, canvas'ta sürükleyerek taşıyabilirsin</label>
+    <div class="fleet">
+      <div><label for="obs-n">Adet</label><input id="obs-n" type="number" value="5" min="0" max="30"></div>
+      <div><label for="obs-hmin">Yük. min (m)</label><input id="obs-hmin" type="number" value="8" min="1"></div>
+      <div><label for="obs-hmax">Yük. maks (m)</label><input id="obs-hmax" type="number" value="25" min="1"></div>
+    </div>
+    <button id="start">Simülasyonu başlat</button>
+    <button id="stop" class="secondary">Durdur</button>
+    <p class="engine-badge">Motor: <b id="engine">—</b></p>
+  </section>
+
+  <section class="stage">
+    <canvas id="field" width="860" height="640" aria-label="Sürü simülasyon alanı"></canvas>
+    <div class="hud" id="hud">Simülasyon bekleniyor…</div>
+    <div class="legend">
+      <span>🚁 UAV</span>
+      <span>🚙 UGV</span>
+      <span>🤖 AMR</span>
+      <span><i class="dot" style="background:var(--ob)"></i>Engel</span>
+    </div>
+  </section>
+</main>
+<section class="roi-wrap">
+  <section class="panel">
+    <h2>ROI Hesaplama — Girdiler</h2>
+    <label for="roi-current">Mevcut operasyon maliyeti (işçilik + yakıt + bakım, TL/ay)</label>
+    <input id="roi-current" type="number" value="450000" min="0">
+    <label for="roi-license">Tusmec lisans ücreti (aylık SaaS, TL/ay)</label>
+    <input id="roi-license" type="number" value="120000" min="0">
+    <label for="roi-fleet">Filo işletme maliyeti (TL/ay) — boş bırakılırsa simülasyondan hesaplanır</label>
+    <input id="roi-fleet" type="number" placeholder="simülasyondan türet">
+    <div class="fleet">
+      <div><label for="roi-setup">Kurulum (TL, ops.)</label><input id="roi-setup" type="number" value="900000" min="0"></div>
+      <div><label for="roi-hours">Saat/gün</label><input id="roi-hours" type="number" value="8" min="1" max="24"></div>
+      <div><label for="roi-rate">USD kuru</label><input id="roi-rate" type="number" value="40" min="1" step="0.01"></div>
+    </div>
+    <button id="roi-calc">ROI hesapla</button>
+    <p class="engine-badge" id="roi-note"></p>
+  </section>
+
+  <section class="panel">
+    <h2>ROI Sonuçları</h2>
+    <div class="results" id="roi-results" hidden>
+      <div class="kpi"><span>Aylık tasarruf</span><b id="r-monthly">—</b><small id="r-monthly-usd"></small></div>
+      <div class="kpi"><span>Yıllık tasarruf</span><b id="r-annual">—</b><small id="r-annual-usd"></small></div>
+      <div class="kpi"><span>Geri ödeme süresi</span><b id="r-payback">—</b></div>
+      <div class="kpi"><span>5 yıllık ROI</span><b id="r-roi">—</b></div>
+    </div>
+    <p id="roi-empty" class="engine-badge">Henüz hesap yapılmadı. Soldaki formu doldurup "ROI hesapla"ya bas.</p>
+    <canvas id="roi-chart" height="220" aria-label="Mevcut durum ile Tusmec karşılaştırma grafiği"></canvas>
+  </section>
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="/static/js/console.js?v=5"></script>
+<script src="/static/js/roi.js"></script>
+</body>
+</html>
