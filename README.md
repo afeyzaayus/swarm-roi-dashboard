@@ -8,7 +8,7 @@ sunar, tarayıcıda gerçek zamanlı görselleştirir ve ROI hesaplar.
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-pip install django numpy
+pip install -r requirements-web.txt
 python manage.py migrate
 python manage.py runserver
 # tarayıcı: http://127.0.0.1:8000
@@ -59,7 +59,7 @@ Hafta 2 motoru `simulation/src` altında, hiçbir dosyası değiştirilmeden
 çalışıyor. Parametreli senaryo kurucusu `simbridge/web_scenario.py`'de —
 form girdilerinden (alan, filo, engel sayısı/yükseklik aralığı, seed)
 Environment + ajanlar + SimulationEngine inşa eder. Kurulum: `pip install
-django numpy` yeterli (pygame/matplotlib web için gerekmez).
+-r requirements-web.txt` yeterli (pygame/matplotlib web için gerekmez).
 
 ## Sayfalar
 - `/` — Görev parametreleri + tam sayfa simülasyon konsolu. Görev tipi
