@@ -1,4 +1,4 @@
-# Tusmec Hafta 3 — Web Arayüzü + ROI Modülü (İskelet)
+# Tusmec Web Arayüzü + ROI Modülü (İskelet)
 
 Django tabanlı demo konsolu. Hafta 2 sürü simülasyon motorunu API olarak
 sunar, tarayıcıda gerçek zamanlı görselleştirir ve ROI hesaplar.
@@ -87,23 +87,3 @@ django numpy` yeterli (pygame/matplotlib web için gerekmez).
   sense aşaması engelleri her tick yeniden okur.
 - Sonsuz yükseklikli engel (no-fly kolonu) JSON'da `height: null,
   infinite: true` olarak taşınır ve canvas'ta ∞ etiketiyle çizilir.
-
-## ÖNEMLİ — maliyet kalibrasyonu
-Hafta 2 spec'lerindeki `cost_per_hour` değerleri (UAV 120, UGV 45, AMR 25
-USD/saat) simülasyon amaçlı yer tutuculardır. "Filo maliyetini
-simülasyondan türet" modu bu değerlerle çalıştığında (örn. 3+2+3 filo =
-525 USD/saat ≈ 4,37M TL/ay) şablonlardaki temsili mevcut maliyetlerden
-büyük çıkar ve tasarruf negatif görünür. Demo öncesi ya spec'lerdeki
-cost_per_hour değerleri danışmandan alınacak gerçekçi rakamlarla
-güncellenmeli ya da toplantıda filo maliyeti alanı elle girilmelidir.
-Matematik doğrudur; kalibre edilmesi gereken veridir.
-
-## Yapılacaklar (hafta planı)
-- [ ] cost_per_hour / şablon maliyetlerini danışman verisiyle kalibre et
-- [ ] Mobil ince ayar, Chart.js'i yerelleştir (çevrimdışı demo)
-- [x] PDF export (ReportLab)
-- [ ] Tusmec logo, demo video (zorunlu, ≥2 dk)
-
-## Danışmana sorulacaklar
-- Kurulum (capex) maliyeti var mı, yoksa saf SaaS mı? (geri ödeme formülünü etkiler)
-- Segment bazlı gerçek işçilik/yakıt/bakım kalemleri (Hafta 1 raporu §9'daki öneri)
