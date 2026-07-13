@@ -50,7 +50,7 @@ class RoiTests(unittest.TestCase):
 
     def test_simulasyondan_filo_maliyeti(self):
         # 13 USD/saat * 40 TL * 8 saat (sabit) * 26 gün = 108_160 TL/ay
-        tl = fleet_monthly_cost_from_simulation(13.0, 26, 40.0)
+        tl = fleet_monthly_cost_from_simulation(13.0, 40.0)
         self.assertAlmostEqual(tl, 108_160)
 
 

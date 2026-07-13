@@ -14,14 +14,10 @@ python manage.py runserver
 # tarayıcı: http://127.0.0.1:8000
 ```
 
-Hafta 2 motorunu bağlamak için: `simulation/README.md`.
-Motor yoksa aynı arayüzlü bir MOCK motor devreye girer (arayüzde rozet
-"mock" gösterir) — web katmanı motorsuz da geliştirilebilir.
-
 ## Mimari
 
 ```
-tusmec-demo/
+swarm-roi-dashboard/
 ├── simulation/          # Hafta 2 motoru (src/ buraya kopyalanır, DOKUNULMAZ)
 ├── simbridge/           # ros2_bridge'in web kardeşi
 │   ├── engine_loader.py #   gerçek motoru bul / mock'a düş
