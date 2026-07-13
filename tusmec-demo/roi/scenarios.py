@@ -11,7 +11,7 @@ alınıp buradaki değerlerle değiştirilmelidir.
 """
 
 SCENARIOS = {
-    "depo": {
+    "depo_lojistigi": {
         "label": "Depo Lojistiği",
         "description": "E-ticaret deposunda sipariş toplama ve palet transferi — OMNIBOT/AMR filosu",
         "task_type": "depo_lojistigi",
@@ -31,7 +31,7 @@ SCENARIOS = {
         "tusmec_monthly_license": 90_000,
         "setup_cost": 600_000,
     },
-    "savunma": {
+    "guvenlik_devriyesi": {
         "label": "Güvenlik / Savunma Devriyesi",
         "description": "Tesis çevre güvenliği — İHA-İKA eş güdümlü devriye ve gözetleme",
         "task_type": "guvenlik_devriyesi",

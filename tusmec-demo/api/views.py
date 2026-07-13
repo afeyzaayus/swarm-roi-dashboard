@@ -31,9 +31,10 @@ def _body(request) -> dict:
 @require_POST
 def sim_start(request):
     config = _body(request)
-    scenario_key = config.pop("scenario", None)
-    if scenario_key in SCENARIOS:
-        base = SCENARIOS[scenario_key]
+    config.pop("scenario", None)  # eski alan, artık kullanılmıyor
+    task = config.get("task_type")
+    if task in SCENARIOS:
+        base = SCENARIOS[task]
         merged = {"area_m2": base["area_m2"], **base["fleet"]}
         merged.update(config)  # kullanıcı girdisi şablonu ezebilir
         config = merged
@@ -85,18 +86,26 @@ def roi(request):
     data = _body(request)
     try:
         usd_rate = float(data.get("usd_rate", 1.0))
+        fleet = {k: int(data.get(k) or 0) for k in ("uav", "ugv", "amr")}
         fleet_op = data.get("fleet_monthly_operating")
+        fleet_source = "manuel"
         if fleet_op is None:
-            # Girilmemişse simülasyonun saatlik maliyetinden türet.
-            session = MANAGER.current()
+            # Öncelik: filo adetlerinden (ROI sayfası bağımsız çalışır);
+            # adet yoksa canlı simülasyonun saatlik maliyetinden.
             cph = 0.0
-            if session is not None:
-                snap = session.snapshot()
-                sim_time_h = max(snap["stats"]["sim_time"] / 3600.0, 1e-9)
-                cph = snap["stats"]["total_cost_usd"] / sim_time_h
+            if any(fleet.values()):
+                from simbridge.specs import fleet_cost_per_hour
+                cph = fleet_cost_per_hour(fleet)
+                fleet_source = "filo spec'lerinden"
+            else:
+                session = MANAGER.current()
+                if session is not None:
+                    snap = session.snapshot()
+                    sim_time_h = max(snap["stats"]["sim_time"] / 3600.0, 1e-9)
+                    cph = snap["stats"]["total_cost_usd"] / sim_time_h
+                    fleet_source = "canlı simülasyondan"
             fleet_op = fleet_monthly_cost_from_simulation(
                 cph,
-                float(data.get("days_per_month", 26)),
                 usd_rate,
             )
         inputs = RoiInputs(
@@ -112,6 +121,30 @@ def roi(request):
     return JsonResponse({
         "ok": True,
         "task_type": data.get("task_type"),
+        "fleet_source": fleet_source,
         "inputs": asdict(inputs),
         "outputs": asdict(out),
     })
+
+
+@csrf_exempt
+@require_POST
+def roi_pdf(request):
+    """ROI raporunu PDF olarak indirir (bonus, +15).
+
+    Beklenen gövde: {task_label, area_m2?, fleet_desc?, fleet_source?,
+                     inputs{RoiInputs alanları}, outputs{RoiOutputs alanları},
+                     chart_png (Chart.js canvas'ının PNG dataURL'i, ops.)}
+    """
+    from django.http import HttpResponse
+
+    from roi.pdf_report import build_roi_pdf
+
+    data = _body(request)
+    try:
+        pdf_bytes = build_roi_pdf(data)
+    except (KeyError, TypeError, ValueError) as exc:
+        return JsonResponse({"ok": False, "error": f"Eksik/geçersiz alan: {exc}"}, status=400)
+    resp = HttpResponse(pdf_bytes, content_type="application/pdf")
+    resp["Content-Disposition"] = 'attachment; filename="tusmec-roi-raporu.pdf"'
+    return resp

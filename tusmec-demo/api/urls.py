@@ -8,4 +8,5 @@ urlpatterns = [
     path("sim/obstacle", views.obstacle_move),
     path("scenarios", views.scenarios),
     path("roi", views.roi),
+    path("roi/pdf", views.roi_pdf),
 ]

@@ -1,0 +1,63 @@
+/* Tusmec demo — ortak tema. Dark varsayılan; <html data-theme="light"> ile
+   aydınlık mod. Canvas çizimleri de bu değişkenleri okur (console.js). */
+:root{
+  --navy:#16263f; --navy-2:#1e3355; --field:#0d1728;
+  --teal:#2bbfc4; --teal-dim:#1b7f84;
+  --ink:#e8eef7; --ink-dim:#8fa3bf;
+  --uav:#4da3ff; --ugv:#57d98a; --amr:#ffb84d; --ob:#3a4c68;
+  --grid:rgba(58,76,104,.35);
+  --ob-fill:rgba(58,76,104,.6);
+  --ob-fill-drag:rgba(43,191,196,.35);
+  --canvas-label:rgba(232,238,247,.75);
+  --neg:#ff7a7a;
+}
+[data-theme="light"]{
+  --navy:#f2f5fa; --navy-2:#ffffff; --field:#e7edf5;
+  --teal:#0e8d92; --teal-dim:#0e8d92;
+  --ink:#16263f; --ink-dim:#5a6b84;
+  --ob:#b8c4d6;
+  --grid:rgba(90,107,132,.25);
+  --ob-fill:rgba(122,140,165,.45);
+  --ob-fill-drag:rgba(14,141,146,.30);
+  --canvas-label:rgba(22,38,63,.85);
+  --neg:#c0392b;
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--navy);color:var(--ink);
+     font:15px/1.5 "Segoe UI",system-ui,sans-serif;min-height:100vh;
+     display:flex;flex-direction:column}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+       padding:1rem 1.25rem;border-bottom:1px solid var(--ob)}
+header h1{font-size:1.05rem;letter-spacing:.14em;text-transform:uppercase;margin:0}
+header h1 b{color:var(--teal)}
+.header-actions{display:flex;gap:.5rem}
+.icon-btn{width:auto;margin:0;padding:.4rem .7rem;border-radius:6px;border:1px solid var(--ob);
+          background:var(--navy-2);color:var(--ink);cursor:pointer;font-size:.9rem}
+.icon-btn:hover{border-color:var(--teal)}
+.panel{background:var(--navy-2);border-radius:10px;padding:1rem;
+       border:1px solid var(--ob)}
+.panel h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;
+          color:var(--teal);margin-bottom:.75rem}
+label{display:block;font-size:.78rem;color:var(--ink-dim);margin:.6rem 0 .2rem}
+input,select{width:100%;padding:.45rem .55rem;border-radius:6px;
+      border:1px solid var(--ob);background:var(--field);color:var(--ink)}
+input:focus,select:focus,button:focus{outline:2px solid var(--teal);outline-offset:1px}
+.fleet{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:.5rem}
+button{margin-top:1rem;width:100%;padding:.6rem;border:0;border-radius:6px;
+       background:var(--teal);color:#fff;font-weight:600;cursor:pointer}
+[data-theme="light"] button{color:#fff}
+[data-theme="light"] .icon-btn{color:var(--ink)}
+button.secondary{background:transparent;border:1px solid var(--teal-dim);
+       color:var(--teal);margin-top:.5rem}
+button:hover{filter:brightness(1.1)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.engine-badge{font:11px ui-monospace,monospace;color:var(--ink-dim);margin-top:.75rem}
+.engine-badge b.mock{color:var(--amr)} .engine-badge b.real{color:var(--ugv)}
+.results{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+         gap:.6rem;margin-bottom:1rem}
+.kpi{background:var(--field);border-radius:8px;padding:.6rem .75rem}
+.kpi span{display:block;font-size:.7rem;letter-spacing:.08em;
+          text-transform:uppercase;color:var(--ink-dim)}
+.kpi b{font-size:1.15rem;color:var(--teal)}
+.kpi b.neg{color:var(--neg)}
+.kpi small{display:block;color:var(--ink-dim)}

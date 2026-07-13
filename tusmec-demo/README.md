@@ -65,6 +65,19 @@ form girdilerinden (alan, filo, engel sayısı/yükseklik aralığı, seed)
 Environment + ajanlar + SimulationEngine inşa eder. Kurulum: `pip install
 django numpy` yeterli (pygame/matplotlib web için gerekmez).
 
+## Sayfalar
+- `/` — Görev parametreleri + tam sayfa simülasyon konsolu. Görev tipi
+  seçimi alan/filo varsayılanlarını doldurur (senaryo şablonu kaldırıldı;
+  şablon = görev tipi). "ROI Hesaplama →" butonu form değerlerini sorgu
+  parametresiyle taşıyarak `/roi`'yi yeni sekmede açar.
+- `/roi` — Bağımsız ROI sayfası: dört zorunlu girdi grubu, dört zorunlu
+  çıktı, Chart.js karşılaştırma grafiği ve PDF raporu indirme
+  (`POST /api/roi/pdf`, ReportLab + DejaVu, bonus +15). Filo işletme
+  maliyeti girilmezse filo adetleri × spec cost_per_hour'dan türetilir —
+  canlı simülasyon oturumu gerektirmez.
+- Dark/light mod: sağ üstteki düğme, tercih localStorage'da; canvas ve
+  grafik renkleri CSS değişkenlerinden okunur, tema değişince yeniden çizilir.
+
 ## Engeller
 - Sayı ve yükseklik aralığı formdan girilir; konum ve yarıçap rastgele
   atanır (her başlatmada farklı seed).
@@ -88,7 +101,8 @@ Matematik doğrudur; kalibre edilmesi gereken veridir.
 ## Yapılacaklar (hafta planı)
 - [ ] cost_per_hour / şablon maliyetlerini danışman verisiyle kalibre et
 - [ ] Mobil ince ayar, Chart.js'i yerelleştir (çevrimdışı demo)
-- [ ] PDF export (WeasyPrint), Tusmec logo, demo video
+- [x] PDF export (ReportLab)
+- [ ] Tusmec logo, demo video (zorunlu, ≥2 dk)
 
 ## Danışmana sorulacaklar
 - Kurulum (capex) maliyeti var mı, yoksa saf SaaS mı? (geri ödeme formülünü etkiler)

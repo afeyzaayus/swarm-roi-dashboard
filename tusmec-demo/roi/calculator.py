@@ -39,14 +39,14 @@ class RoiOutputs:
 
 
 def fleet_monthly_cost_from_simulation(
-    cost_per_hour_usd: float, days_per_month: float, usd_rate: float
+    cost_per_hour_usd: float, usd_rate: float
 ) -> float:
     """Simülasyonun ürettiği saatlik filo maliyetini aylık TL'ye çevirir.
 
     Demo'nun satış toplantısındaki asıl kozu: bu rakam uydurma değil,
-    motorun cost_per_hour verisinden geliyor. (Günde varsayılan 8 saat üzerinden)
+    motorun cost_per_hour verisinden geliyor. (Günde varsayılan 8 saat, ayda 26 gün üzerinden)
     """
-    return cost_per_hour_usd * usd_rate * 8.0 * days_per_month
+    return cost_per_hour_usd * usd_rate * 8.0 * 26.0
 
 
 def compute_roi(inp: RoiInputs) -> RoiOutputs:

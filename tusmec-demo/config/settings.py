@@ -122,3 +122,20 @@ STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [BASE_DIR / 'frontend' / 'static']
 ALLOWED_HOSTS = ['*']  # demo
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+}

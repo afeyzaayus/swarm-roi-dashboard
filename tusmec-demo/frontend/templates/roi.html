@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tusmec · ROI Hesaplama</title>
+<link rel="stylesheet" href="/static/css/theme.css?v=3">
+<style>
+  /* Sayfa 2: ROI girdileri + sonuçlar + grafik, tüm sayfayı kaplar */
+  main{flex:1;display:grid;grid-template-columns:360px 1fr;gap:1rem;
+       padding:1rem 1.25rem;width:100%}
+  @media (max-width:900px){
+    body { height: auto; overflow: auto; }
+    main { display: flex; flex-direction: column; padding: 1rem; gap: 1rem; }
+    .chart-box { min-height: 280px; }
+  }
+  .chart-box{position:relative;flex:1;min-height:320px;width:100%}
+  .right{display:flex;flex-direction:column}
+</style>
+</head>
+<body>
+<header>
+  <h1>TUS<b>MEC</b> · ROI Hesaplama</h1>
+  <div class="header-actions">
+    <button id="theme-toggle" class="icon-btn" type="button">☀️ Açık</button>
+  </div>
+</header>
+<main>
+  <section class="panel">
+    <h2>Girdiler</h2>
+    <label for="task">Görev tipi</label>
+    <select id="task">
+      <option value="depo_lojistigi">Depo lojistiği</option>
+      <option value="tarim">Tarım</option>
+      <option value="guvenlik_devriyesi">Güvenlik devriyesi</option>
+    </select>
+    <label for="area">Alan büyüklüğü (m²)</label>
+    <input id="area" type="number" value="8000" min="100">
+    <label>Hedef filo konfigürasyonu</label>
+    <div class="fleet">
+      <div><label for="uav">UAV</label><input id="uav" type="number" value="0" min="0"></div>
+      <div><label for="ugv">UGV</label><input id="ugv" type="number" value="1" min="0"></div>
+      <div><label for="amr">AMR</label><input id="amr" type="number" value="6" min="0"></div>
+    </div>
+    <label for="roi-current">Mevcut operasyon maliyeti (işçilik + yakıt + bakım, TL/ay)</label>
+    <input id="roi-current" type="number" value="450000" min="0">
+    <label for="roi-license">Tusmec lisans ücreti (aylık SaaS, TL/ay)</label>
+    <input id="roi-license" type="number" value="120000" min="0">
+    <label for="roi-fleet">Filo işletme maliyeti (TL/ay)</label>
+    <input id="roi-fleet" type="number" value="30000" min="0" placeholder="Simülasyondan gelecek">
+    <div class="fleet">
+      <div><label for="roi-setup">Kurulum (TL)</label><input id="roi-setup" type="number" value="900000" min="0"></div>
+      <div><label for="roi-rate">USD kuru</label><input id="roi-rate" type="number" value="35.0" step="0.01" min="1"></div>
+    </div>
+    <button id="roi-calc">ROI hesapla</button>
+    <button id="roi-pdf" class="secondary" disabled>ROI raporunu PDF indir</button>
+    <p class="engine-badge" id="roi-note"></p>
+  </section>
+
+  <section class="panel right">
+    <h2>Sonuçlar</h2>
+    <div class="results" id="roi-results" hidden>
+      <div class="kpi"><span>Aylık tasarruf</span><b id="r-monthly">—</b><small id="r-monthly-usd"></small></div>
+      <div class="kpi"><span>Yıllık tasarruf</span><b id="r-annual">—</b><small id="r-annual-usd"></small></div>
+      <div class="kpi"><span>Geri ödeme süresi</span><b id="r-payback">—</b></div>
+      <div class="kpi"><span>5 yıllık ROI</span><b id="r-roi">—</b></div>
+    </div>
+    <p id="roi-empty" class="engine-badge">Henüz hesap yapılmadı. Soldaki formu doldurup "ROI hesapla"ya bas.</p>
+    <div class="chart-box">
+      <canvas id="roi-chart" aria-label="Mevcut durum ile Tusmec karşılaştırma grafiği"></canvas>
+    </div>
+  </section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="/static/js/theme.js?v=1"></script>
+<script src="/static/js/roi.js?v=8"></script>
+</body>
+</html>

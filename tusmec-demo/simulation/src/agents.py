@@ -51,12 +51,12 @@ class AgentSpec:
 
 #: Default parameter sets (KPI: "her ajan tipine özgü parametre seti")
 DEFAULT_SPECS: dict[str, AgentSpec] = {
-    "UAV": AgentSpec(max_speed=25.0, max_accel=6.0, sensor_range=40.0,
+    "UAV": AgentSpec(max_speed=80.0, max_accel=6.0, sensor_range=40.0,
                      task_capacity=2.5, cost_per_hour=120.0),
-    "UGV": AgentSpec(max_speed=20.0, max_accel=2.5, sensor_range=20.0,
+    "UGV": AgentSpec(max_speed=75.0, max_accel=2.5, sensor_range=20.0,
                      task_capacity=80.0, cost_per_hour=45.0,
                      friction=0.6, max_turn_rate=90.0),
-    "AMR": AgentSpec(max_speed=18.0, max_accel=1.5, sensor_range=12.0,
+    "AMR": AgentSpec(max_speed=63.0, max_accel=1.5, sensor_range=12.0,
                      task_capacity=30.0, cost_per_hour=25.0,
                      friction=0.8),
     "USV": AgentSpec(max_speed=8.0, max_accel=3.0, sensor_range=30.0,

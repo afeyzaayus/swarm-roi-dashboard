@@ -4,6 +4,13 @@
 const canvas = document.getElementById("field");
 const ctx = canvas.getContext("2d");
 const engineBadge = document.getElementById("engine");
+const statbar = document.getElementById("statbar");
+
+/* Tema değişince canvas renkleri de değişsin diye CSS değişkenlerini oku */
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+window.addEventListener("themechange", () => { if (lastSnap) draw(lastSnap); });
 
 const COLORS = { uav: "#4da3ff", ugv: "#57d98a", amr: "#ffb84d" };
 const trails = new Map();          // agent_id -> son N konum
@@ -36,7 +43,7 @@ function draw(snap) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // dünya çerçevesi + ızgara
-  ctx.strokeStyle = "rgba(58,76,104,.35)"; ctx.lineWidth = 1;
+  ctx.strokeStyle = cssVar("--grid"); ctx.lineWidth = 1;
   for (let i = 0; i <= 10; i++) {
     const wx = (world.width / 10) * i;
     const [gx] = toPx(wx, 0);
@@ -51,11 +58,11 @@ function draw(snap) {
     const [x, y] = toPx(pos[0], pos[1]);
     const r = ob.radius * s;
     ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fillStyle = drag.index === ob.index ? "rgba(43,191,196,.35)" : "rgba(58,76,104,.6)";
+    ctx.fillStyle = drag.index === ob.index ? cssVar("--ob-fill-drag") : cssVar("--ob-fill");
     ctx.fill();
-    ctx.strokeStyle = drag.index === ob.index ? "#2bbfc4" : "#3a4c68";
+    ctx.strokeStyle = drag.index === ob.index ? cssVar("--teal") : cssVar("--ob");
     ctx.lineWidth = drag.index === ob.index ? 2 : 1; ctx.stroke();
-    ctx.fillStyle = "rgba(232,238,247,.75)";
+    ctx.fillStyle = cssVar("--canvas-label");
     ctx.font = "10px monospace"; ctx.textAlign = "center";
     ctx.fillText(ob.infinite ? "∞" : `h: ${ob.height}m`, x, y - 4);
     ctx.fillText(`w: ${(ob.radius * 2).toFixed(1)}m`, x, y + 8);
@@ -103,12 +110,16 @@ function draw(snap) {
     ctx.textBaseline = "alphabetic";
     
     if (a.z > 0.5) {
-      ctx.fillStyle = "rgba(232,238,247,.7)"; ctx.font = "10px monospace";
+      ctx.fillStyle = cssVar("--canvas-label"); ctx.font = "10px monospace";
       ctx.fillText(`+${Math.round(a.z)}m`, x + 10, y - 8);
     }
   }
 
 
+  const st = snap.stats;
+  if (statbar) statbar.innerHTML =
+    `t = <b>${st.sim_time}s</b> · hedefe ulaşan <b>${st.goals_reached}/${st.total_agents}</b>` +
+    ` · toplam mesafe <b>${st.total_distance} m</b> · işletme maliyeti <b>$${st.total_cost_usd}</b>`;
   engineBadge.textContent = snap.engine;
   engineBadge.className = snap.engine;
 }
@@ -181,33 +192,25 @@ async function poll() {
   } catch (_) { /* sonraki turda dener */ }
 }
 
+/* Görev tipi (= senaryo şablonu) değişince alan + filo varsayılanlarını doldur */
+let SCENARIO_DEFAULTS = {};
 async function loadScenarios() {
   const res = await fetch("/api/scenarios");
-  const data = await res.json();
-  const sel = document.getElementById("scenario");
-  for (const [key, sc] of Object.entries(data.scenarios)) {
-    const opt = document.createElement("option");
-    opt.value = key; opt.textContent = sc.label;
-    sel.appendChild(opt);
-  }
+  SCENARIO_DEFAULTS = (await res.json()).scenarios;
+  const sel = document.getElementById("task");
   sel.addEventListener("change", () => {
-    const sc = data.scenarios[sel.value];
+    const sc = SCENARIO_DEFAULTS[sel.value];
     if (!sc) return;
     document.getElementById("area").value = sc.area_m2;
-    document.getElementById("task").value = sc.task_type;
     for (const t of ["uav", "ugv", "amr"])
       document.getElementById(t).value = sc.fleet[t];
-    // ROI formunu segment verileriyle ön-doldur (kullanıcı değiştirebilir)
-    document.getElementById("roi-current").value = sc.current_monthly_cost;
-    document.getElementById("roi-license").value = sc.tusmec_monthly_license;
-    document.getElementById("roi-setup").value = sc.setup_cost;
   });
+  sel.dispatchEvent(new Event("change"));  // açılışta seçili görev tipiyle doldur
 }
 
 document.getElementById("start").addEventListener("click", async () => {
   trails.clear();
   const body = {
-    scenario: document.getElementById("scenario").value || undefined,
     task_type: document.getElementById("task").value,
     area_m2: +document.getElementById("area").value,
     uav: +document.getElementById("uav").value,
@@ -224,5 +227,16 @@ document.getElementById("start").addEventListener("click", async () => {
 
 document.getElementById("stop").addEventListener("click", () =>
   fetch("/api/sim/stop", { method: "POST" }));
+
+document.getElementById("goto-roi").addEventListener("click", () => {
+  const q = new URLSearchParams({
+    task: document.getElementById("task").value,
+    area: document.getElementById("area").value,
+    uav: document.getElementById("uav").value,
+    ugv: document.getElementById("ugv").value,
+    amr: document.getElementById("amr").value,
+  });
+  window.open("/roi?" + q.toString(), "_blank");
+});
 
 loadScenarios();
