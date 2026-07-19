@@ -49,8 +49,8 @@ simülasyonun `cost_per_hour` verisinden türetilir: `hours_per_day` ×
 |---|---|---|
 | 450k mevcut, 120k lisans, 80k filo, 900k kurulum | tasarruf 250k/ay | 250.000 ✓ |
 | aynı | geri ödeme 900k/250k = 3,6 ay | 3,6 ✓ |
-| aynı | 5 yıl ROI (15M−0,9M)/12,9M = %109,3 | %109,3 ✓ |
-| 300k mevcut, 90k lisans, 60k filo, 600k kurulum | tasarruf 150k/ay; geri ödeme 4,0 ay; ROI (9M−0,6M)/9,6M = %87,5 | 150.000 / 4,0 / %87,5 ✓ |
+| aynı | 5 yıl ROI (22.2M−8.1M)/8.1M = %174,1 | %174,1 ✓ |
+| 300k mevcut, 90k lisans, 60k filo, 600k kurulum | tasarruf 150k/ay; geri ödeme 4,0 ay; ROI (14.4M−6.0M)/6.0M = %140,0 | 150.000 / 4,0 / %140,0 ✓ |
 
 Testler: `python manage.py test roi` (5 test, hepsi elle hesaplı).
 

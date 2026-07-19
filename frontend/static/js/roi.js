@@ -65,8 +65,15 @@ async function calcRoi() {
     setup_cost: num("roi-setup") ?? 0,
     usd_rate: num("roi-rate") ?? 1,
   };
-  const fleetManual = num("roi-fleet");
-  if (fleetManual !== null) body.fleet_monthly_operating = fleetManual;
+  const uavCost = num("cost-uav") ?? 0;
+  const ugvCost = num("cost-ugv") ?? 0;
+  const amrCost = num("cost-amr") ?? 0;
+
+  const uavCount = body.uav;
+  const ugvCount = body.ugv;
+  const amrCount = body.amr;
+
+  body.fleet_monthly_operating = (uavCount * uavCost) + (ugvCount * ugvCost) + (amrCount * amrCost);
 
   const note = document.getElementById("roi-note");
   const res = await fetch("/api/roi", { method: "POST", body: JSON.stringify(body) });
@@ -77,9 +84,7 @@ async function calcRoi() {
   document.getElementById("roi-pdf").disabled = false;
 
   const o = data.outputs;
-  note.textContent = fleetManual === null
-    ? `Filo işletme maliyeti ${data.fleet_source} türetildi: ${TL(data.inputs.fleet_monthly_operating)}/ay`
-    : "";
+  note.textContent = "";
 
   document.getElementById("roi-results").hidden = false;
   document.getElementById("roi-empty").hidden = true;
@@ -111,9 +116,9 @@ function drawChart(o) {
     data: {
       labels,
       datasets: [
-        { label: "Mevcut durum (kümülatif maliyet)", data: o.cumulative_current,
+        { label: "Mevcut durum", data: o.cumulative_current,
           borderColor: dim, backgroundColor: "transparent", pointRadius: 0, borderWidth: 2 },
-        { label: "Tusmec çözümü (kurulum + SaaS + filo)", data: o.cumulative_tusmec,
+        { label: "Tusmec çözümü", data: o.cumulative_tusmec,
           borderColor: teal, backgroundColor: "transparent", pointRadius: 0, borderWidth: 2 },
       ],
     },

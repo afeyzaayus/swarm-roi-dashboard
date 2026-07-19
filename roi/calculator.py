@@ -61,10 +61,22 @@ def compute_roi(inp: RoiInputs) -> RoiOutputs:
     else:
         payback = inp.setup_cost / monthly_saving
 
-    # 5 yıllık ROI: net kazanç / toplam Tusmec yatırımı.
-    total_saving = monthly_saving * HORIZON_MONTHS
-    total_investment = inp.setup_cost + tusmec_monthly * HORIZON_MONTHS
-    roi_pct = (total_saving - inp.setup_cost) / total_investment * 100 if total_investment > 0 else 0.0
+    # 5 yıllık ROI: ((5 yıllık tasarruf) - (kurulum + 5 yıllık lisans)) / (kurulum + 5 yıllık lisans) * 100
+    # 5 yıllık tasarruf (brüt) = (mevcut operasyon maliyeti - filo işletme maliyeti) * 60
+    # 5 yıllık net tasarruf
+    saving_5y = monthly_saving * HORIZON_MONTHS
+
+    # Toplam yatırım
+    investment_5y = (
+        inp.setup_cost
+        + inp.tusmec_monthly_license * HORIZON_MONTHS
+    )
+
+    roi_pct = (
+        (saving_5y - investment_5y)
+        / investment_5y
+        * 100
+    ) if investment_5y > 0 else 0.0
 
     # Karşılaştırma grafiği için kümülatif eğriler (ay 0..60).
     cum_current, cum_tusmec = [], []

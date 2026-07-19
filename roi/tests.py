@@ -14,8 +14,9 @@ class RoiTests(unittest.TestCase):
         # Elle hesap: Tusmec aylık = 120k + 80k = 200k
         # tasarruf = 450k - 200k = 250k/ay, yıllık 3M
         # geri ödeme = 900k / 250k = 3.6 ay
-        # 5 yıl: tasarruf 15M; yatırım = 900k + 200k*60 = 12.9M
-        # ROI = (15M - 0.9M) / 12.9M * 100 = 109.3
+        # 5 yıl tasarruf (brüt) = (450k - 80k) * 60 = 22.2M
+        # yatırım (kurulum + lisans) = 900k + 120k*60 = 8.1M
+        # ROI = (22.2M - 8.1M) / 8.1M * 100 = 174.1
         out = compute_roi(RoiInputs(
             current_monthly_cost=450_000,
             tusmec_monthly_license=120_000,
@@ -27,7 +28,7 @@ class RoiTests(unittest.TestCase):
         self.assertAlmostEqual(out.annual_saving_tl, 3_000_000)
         self.assertAlmostEqual(out.monthly_saving_usd, 6_250)
         self.assertAlmostEqual(out.payback_months, 3.6)
-        self.assertAlmostEqual(out.five_year_roi_pct, 109.3)
+        self.assertAlmostEqual(out.five_year_roi_pct, 174.1)
 
     def test_saf_saas_kurulumsuz(self):
         # Kurulum yoksa geri ödeme 0 ay (ilk aydan tasarruf).
