@@ -121,6 +121,7 @@ function draw(snap) {
     `t = <b>${st.sim_time}s</b> · hedefe ulaşan <b>${st.goals_reached}/${st.total_agents}</b>` +
     ` · toplam mesafe <b>${st.total_distance} m</b> · işletme maliyeti <b>$${st.total_cost_usd}</b>`;
   engineBadge.textContent = snap.engine;
+  syncStopButton(!!snap.running);
   engineBadge.className = snap.engine;
 }
 
@@ -225,8 +226,22 @@ document.getElementById("start").addEventListener("click", async () => {
   if (!pollTimer) pollTimer = setInterval(poll, 100); // 10 Hz
 });
 
-document.getElementById("stop").addEventListener("click", () =>
-  fetch("/api/sim/stop", { method: "POST" }));
+/* Durdur ⇄ Devam et: buton etiketi snapshot'taki `running` durumundan
+   türetilir; böylece başlat/durdur/devam ve oturumun kendi kendine bitmesi
+   (süre sınırı/hata) hepsi otomatik senkron kalır. */
+const stopBtn = document.getElementById("stop");
+let simRunning = false;
+
+function syncStopButton(running) {
+  simRunning = running;
+  stopBtn.textContent = running ? "Durdur" : "Devam et";
+}
+
+stopBtn.addEventListener("click", async () => {
+  const url = simRunning ? "/api/sim/stop" : "/api/sim/resume";
+  await fetch(url, { method: "POST" });
+  syncStopButton(!simRunning);   // iyimser güncelle; poll zaten doğrular
+});
 
 document.getElementById("goto-roi").addEventListener("click", () => {
   const q = new URLSearchParams({

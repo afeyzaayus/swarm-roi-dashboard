@@ -60,6 +60,21 @@ def sim_stop(request):
 
 @csrf_exempt
 @require_POST
+def sim_resume(request):
+    """Duraklatılmış oturumu kaldığı yerden devam ettirir.
+
+    stop() thread'i durdurur ama motoru ve oturumu korur; start() aynı motor
+    durumuyla yeni bir tick thread'i açar — yani bu doğal bir 'devam et'tir.
+    """
+    session = MANAGER.current()
+    if session is None:
+        return JsonResponse({"ok": False, "error": "Devam ettirilecek oturum yok."}, status=404)
+    session.start()
+    return JsonResponse({"ok": True})
+
+
+@csrf_exempt
+@require_POST
 def obstacle_move(request):
     """Sürükle-bırak: {index, x, y} — engeli canlı simülasyonda taşır."""
     session = MANAGER.current()
