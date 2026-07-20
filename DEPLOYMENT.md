@@ -51,7 +51,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Tarayıcıda **http://127.0.0.1:8000** adresini aç.
+Tarayıcıda **http://127.0.0.1:8000** adresini açın.
 Farklı porttan yayınlamak için: `python manage.py runserver 0.0.0.0:8080`
 (aynı ağdaki başka cihazlardan — örn. mobil testte telefondan — erişim sağlar).
 
@@ -97,28 +97,9 @@ Yoksa: `sudo apt install fonts-dejavu-core`. Bulunamazsa Helvetica'ya düşer
 Oturum emniyet için 10 dakikada kendini durdurur
 (`simbridge/session.py` → `MAX_SIM_SECONDS`). Yeniden "Simülasyonu başlat".
 
-## 7. Üretim (Production) Notları — Opsiyonel
-
-Demo `runserver` ile yapılır; kalıcı bir sunucuda yayınlanacaksa:
-
-```bash
-pip install gunicorn
-export DJANGO_DEBUG=False        # settings.py'de DEBUG'ı bu değişkene bağla
-gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 1
-```
-
-Önemli: simülasyon oturumu **süreç içi** tutulduğundan `--workers 1`
-kullanılmalıdır (çok işçili yapı için oturumun Redis benzeri paylaşımlı bir
-katmana taşınması gerekir — bkz. README "Yapılacaklar").
-`ALLOWED_HOSTS` ve `SECRET_KEY` değerlerini üretim için güncellemeyi unutma.
-
-## 8. macOS / Windows Notları
+## 7. macOS / Windows Notları
 
 - macOS: `brew install python3`; adımlar aynıdır. DejaVu fontu için PDF
   modülü `_FONT_DIRS` listesine `/Library/Fonts` eklenebilir.
 - Windows: `py -m venv .venv` + `.venv\Scripts\activate`; kalan adımlar aynı.
   Font yolu olarak `C:\Windows\Fonts` altına DejaVuSans.ttf kopyalanabilir.
-
----
-
-*Son güncelleme: 14 Temmuz 2026 · Hafta 4 teslimatı kapsamında hazırlanmıştır.*

@@ -1,8 +1,8 @@
-"""Hafta 2 motorunun ince bir taklidi.
+"""Simülasyon motorunun ince bir taklidi.
 
 Yalnızca web katmanını motorsuz geliştirebilmek için var. Gerçek motor
 simulation/src altına kopyalandığında bu dosya devre dışı kalır.
-Arayüz, Hafta 2'deki SimulationEngine ile bilinçli olarak aynı tutulmuştur.
+Arayüz, SimulationEngine ile bilinçli olarak aynı tutulmuştur.
 """
 from __future__ import annotations
 

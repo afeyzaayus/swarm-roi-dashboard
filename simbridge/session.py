@@ -49,7 +49,7 @@ class SimulationSession:
             "amr": int(config.get("amr", 0)),
         }
         if sum(fleet.values()) == 0:
-            fleet = {"uav": 3, "ugv": 2, "amr": 3}
+            fleet = {"uav": 0, "ugv": 0, "amr": 0}
         import random
         seed_val = config.get("seed")
         if seed_val is None:

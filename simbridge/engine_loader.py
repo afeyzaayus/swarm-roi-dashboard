@@ -35,7 +35,7 @@ def _try_real_engine():
         from src.engine import SimulationEngine          # noqa: F401
         from src.environment import Environment          # noqa: F401
         from src import agents as agent_module           # noqa: F401
-        log.info("Gerçek Hafta 2 motoru yüklendi: %s", SIMULATION_DIR / "src")
+        log.info("Gerçek simülasyon motoru yüklendi: %s", SIMULATION_DIR / "src")
         return {
             "kind": "real",
             "SimulationEngine": SimulationEngine,
@@ -53,8 +53,8 @@ def load_engine_module():
         return real
     from . import mock_engine
     log.warning(
-        "Hafta 2 motoru bulunamadı, MOCK motor kullanılıyor. "
-        "Gerçek motor için Hafta 2 projesinin src/ klasörünü %s altına kopyala.",
+        "Simülasyon motoru bulunamadı, MOCK motor kullanılıyor. "
+        "Gerçek motor için simülasyon projesinin src/ klasörünü %s altına kopyala.",
         SIMULATION_DIR,
     )
     return {"kind": "mock", "module": mock_engine}
